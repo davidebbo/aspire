@@ -3,8 +3,15 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var foo = builder.AddParameter("foo");
+var mySecret = builder.AddParameter("mysecret", true);
+var myConn = builder.AddConnectionString("myconn");
+
 builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
        //.WithExternalHttpEndpoints()
+       .WithEnvironment("FOO", foo)
+       .WithEnvironment("MYSECRET", mySecret)
+       .WithReference(myConn)
        ;
 
 // This project is only added in playground projects to support development/debugging

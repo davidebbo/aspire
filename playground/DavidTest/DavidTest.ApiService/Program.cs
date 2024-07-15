@@ -6,6 +6,11 @@ builder.AddServiceDefaults();
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
+var foo = builder.Configuration.GetValue<string>("foo");
+Console.WriteLine(foo);
+var myConn = builder.Configuration.GetConnectionString("myconn");
+Console.WriteLine(myConn);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
