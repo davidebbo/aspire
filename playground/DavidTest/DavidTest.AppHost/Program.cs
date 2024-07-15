@@ -3,6 +3,10 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
+       //.WithExternalHttpEndpoints()
+       ;
+
 // This project is only added in playground projects to support development/debugging
 // of the dashboard. It is not required in end developer code. Comment out this code
 // to test end developer dashboard launch experience. Refer to Directory.Build.props
