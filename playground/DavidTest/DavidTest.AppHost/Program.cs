@@ -3,6 +3,8 @@
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var cache = builder.AddRedis("cache");
+
 var foo = builder.AddParameter("foo");
 var mySecret = builder.AddParameter("mysecret", true);
 var myConn = builder.AddConnectionString("myconn");
@@ -22,7 +24,7 @@ var myConn = builder.AddConnectionString("myconn");
 //    .AddDatabase("mydb")
 //    ;
 
-builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
+var apiService = builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
        //.WithExternalHttpEndpoints()
        .WithEnvironment("FOO", foo)
        .WithEnvironment("MYSECRET", mySecret)
@@ -41,6 +43,13 @@ builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
        //    }
        //})
        ;
+
+builder.AddProject<Projects.DavidTest_Web>("webfrontend")
+    //.WithHttpEndpoint(5002, name: "http2")
+    //.WithHttpsEndpoint(5003, name: "https")
+    //.WithExternalHttpEndpoints()
+    .WithReference(cache)
+    .WithReference(apiService);
 
 // This project is only added in playground projects to support development/debugging
 // of the dashboard. It is not required in end developer code. Comment out this code
