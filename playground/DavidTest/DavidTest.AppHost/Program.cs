@@ -7,11 +7,39 @@ var foo = builder.AddParameter("foo");
 var mySecret = builder.AddParameter("mysecret", true);
 var myConn = builder.AddConnectionString("myconn");
 
+//builder.AddSqlServer("sql")
+//                 .WithDataVolume()
+//                 .AddDatabase("sqldb");
+//builder.AddSqlServer("sql")
+//                 .WithVolume("DavidTest.AppHost-sql-data", "/var/opt/mssql")
+//                 .AddDatabase("sqldb");
+//builder.AddSqlServer("sql")
+//                 .WithBindMount("DavidTest.AppHost-sql-data", "/var/opt/mssql")
+//                 .AddDatabase("sqldb");
+
+//var db = builder.AddMySql("mysql", port:43123)
+//    .WithDataVolume()
+//    .AddDatabase("mydb")
+//    ;
+
 builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
        //.WithExternalHttpEndpoints()
        .WithEnvironment("FOO", foo)
        .WithEnvironment("MYSECRET", mySecret)
        .WithReference(myConn)
+       //.WithReference(db)
+       //.WithEndpointsInEnvironment(e => e.UriScheme == "https")
+       //.WithEnvironment(async context =>
+       //{
+       //    // Variant of https://github.com/dotnet/aspire/issues/2887#issuecomment-2074397449
+       //    if (context.EnvironmentVariables["ASPNETCORE_URLS"] is ReferenceExpression urls)
+       //    {
+       //        var value = await urls.GetValueAsync(context.CancellationToken);
+
+       //        context.EnvironmentVariables["ASPNETCORE_URLS"] = ReferenceExpression.Create(
+       //            $"{(EndpointReferenceExpression)urls.ValueProviders[0]}://*:{(EndpointReferenceExpression)urls.ValueProviders[1]}");
+       //    }
+       //})
        ;
 
 // This project is only added in playground projects to support development/debugging
