@@ -47,7 +47,7 @@ var apiService = builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
 builder.AddProject<Projects.DavidTest_Web>("webfrontend")
     //.WithHttpEndpoint(5002, name: "http2")
     //.WithHttpsEndpoint(5003, name: "https")
-    //.WithExternalHttpEndpoints()
+    .WithExternalHttpEndpoints()
     .WithReference(cache)
     .WithReference(apiService);
 
