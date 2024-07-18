@@ -8,6 +8,7 @@ builder.Services.AddProblemDetails();
 
 var foo = builder.Configuration.GetValue<string>("foo");
 Console.WriteLine(foo);
+var mysecret = builder.Configuration.GetValue<string>("mysecret");
 var myConn = builder.Configuration.GetConnectionString("myconn");
 Console.WriteLine(myConn);
 
@@ -18,7 +19,7 @@ app.UseExceptionHandler();
 
 var summaries = new[]
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching", foo, mysecret
 };
 
 app.MapGet("/weatherforecast", () =>
