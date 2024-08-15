@@ -1,5 +1,13 @@
+//#define TEST_SQL
+//#define TEST_STORAGE
+
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
+#if TEST_STORAGE
+using Azure.Provisioning;
+using Azure.Provisioning.Storage;
+#endif
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -9,27 +17,50 @@ var foo = builder.AddParameter("foo");
 var mySecret = builder.AddParameter("mysecret", true);
 var myConn = builder.AddConnectionString("myconn");
 
-//builder.AddSqlServer("sql")
-//                 .WithDataVolume()
-//                 .AddDatabase("sqldb");
-//builder.AddSqlServer("sql")
-//                 .WithVolume("DavidTest.AppHost-sql-data", "/var/opt/mssql")
-//                 .AddDatabase("sqldb");
-//builder.AddSqlServer("sql")
-//                 .WithBindMount("DavidTest.AppHost-sql-data", "/var/opt/mssql")
-//                 .AddDatabase("sqldb");
+#if TEST_SQL
+builder.AddSqlServer("sql")
+                 .WithDataVolume()
+                 .AddDatabase("sqldb");
+builder.AddSqlServer("sql")
+                 .WithVolume("DavidTest.AppHost-sql-data", "/var/opt/mssql")
+                 .AddDatabase("sqldb");
+builder.AddSqlServer("sql")
+                 .WithBindMount("DavidTest.AppHost-sql-data", "/var/opt/mssql")
+                 .AddDatabase("sqldb");
 
-//var db = builder.AddMySql("mysql", port:43123)
-//    .WithDataVolume()
-//    .AddDatabase("mydb")
-//    ;
+var db = builder.AddMySql("mysql", port: 43123)
+    .WithDataVolume()
+    .AddDatabase("mydb")
+    ;
+#endif
+
+#if TEST_STORAGE
+#pragma warning disable AZPROVISION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+var blobs = builder.AddAzureStorage("storage")
+    .ConfigureConstruct(c =>
+    {
+        var account = c.GetSingleResource<StorageAccount>()!;
+
+        account.AssignProperty(x => x.Sku.Name, "'Standard_LRS'");
+        account.AssignProperty(x => x.EnableHttpsTrafficOnly, "true");
+    }
+    )
+    .RunAsEmulator(e => e.WithImageTag("latest"))
+    .AddBlobs("uploads");
+#pragma warning restore AZPROVISION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#endif
 
 var apiService = builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
        //.WithExternalHttpEndpoints()
        .WithEnvironment("FOO", foo)
        .WithEnvironment("MYSECRET", mySecret)
        .WithReference(myConn)
-       //.WithReference(db)
+#if TEST_STORAGE
+       .WithReference(blobs)
+#endif
+#if TEST_SQL
+       .WithReference(db)
+#endif
        //.WithEndpointsInEnvironment(e => e.UriScheme == "https")
        //.WithEnvironment(async context =>
        //{
