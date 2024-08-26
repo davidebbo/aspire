@@ -14,6 +14,8 @@ var mysecret = builder.Configuration.GetValue<string>("mysecret");
 var myConn = builder.Configuration.GetConnectionString("myconn");
 Console.WriteLine(myConn);
 
+var postgresConn = builder.Configuration.GetConnectionString("postgres");
+
 builder.AddAzureBlobClient("uploads");
 
 var app = builder.Build();
