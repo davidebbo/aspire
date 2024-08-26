@@ -1,5 +1,6 @@
 //#define TEST_SQL
 //#define TEST_STORAGE
+//#define TEST_POSTGRES
 
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
@@ -50,10 +51,19 @@ var blobs = builder.AddAzureStorage("storage")
 #pragma warning restore AZPROVISION001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
 #endif
 
+#if TEST_POSTGRES
+var postgres = builder.AddPostgres("postgres")
+    .WithPgAdmin()
+    ;
+#endif
+
 var apiService = builder.AddProject<Projects.DavidTest_ApiService>("apiservice")
        //.WithExternalHttpEndpoints()
        .WithEnvironment("FOO", foo)
        .WithEnvironment("MYSECRET", mySecret)
+#if TEST_POSTGRES
+       .WithReference(postgres)
+#endif
        .WithReference(myConn)
 #if TEST_STORAGE
        .WithReference(blobs)
