@@ -197,6 +197,9 @@ public static class AzureStorageExtensions
     {
         var resource = new AzureBlobStorageResource(name, builder.Resource);
 
+        // Copy the blob endpoint annotation to the blob resource
+        resource.Annotations.Add(builder.Resource.Annotations.OfType<EndpointAnnotation>().Single(e => e.Name == "blob"));
+
         return builder.ApplicationBuilder.AddResource(resource);
     }
 
@@ -210,6 +213,9 @@ public static class AzureStorageExtensions
     {
         var resource = new AzureTableStorageResource(name, builder.Resource);
 
+        // Copy the table endpoint annotation to the table resource
+        resource.Annotations.Add(builder.Resource.Annotations.OfType<EndpointAnnotation>().Single(e => e.Name == "table"));
+
         return builder.ApplicationBuilder.AddResource(resource);
     }
 
@@ -222,6 +228,9 @@ public static class AzureStorageExtensions
     public static IResourceBuilder<AzureQueueStorageResource> AddQueues(this IResourceBuilder<AzureStorageResource> builder, [ResourceName] string name)
     {
         var resource = new AzureQueueStorageResource(name, builder.Resource);
+
+        // Copy the queue endpoint annotation to the queue resource
+        resource.Annotations.Add(builder.Resource.Annotations.OfType<EndpointAnnotation>().Single(e => e.Name == "queue"));
 
         return builder.ApplicationBuilder.AddResource(resource);
     }

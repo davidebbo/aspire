@@ -1406,7 +1406,7 @@ internal sealed class ApplicationExecutor(ILogger<ApplicationExecutor> logger,
         if (value is not null && isContainer && valueProvider is ConnectionStringReference or EndpointReference or HostUrl)
         {
             // If the value is a connection string or endpoint reference, we need to replace localhost with the container host.
-            return ReplaceLocalhostWithContainerHost(value);
+            return ReplaceLocalhostWithContainerHost(value, ((ConnectionStringReference)valueProvider).Resource);
         }
 
         return value;
@@ -1977,12 +1977,46 @@ internal sealed class ApplicationExecutor(ILogger<ApplicationExecutor> logger,
         }
     }
 
-    private string ReplaceLocalhostWithContainerHost(string value)
+    private string ReplaceLocalhostWithContainerHost(string value, IResourceWithConnectionString resource)
     {
         // https://stackoverflow.com/a/43541732/45091
 
         // This configuration value is a workaround for the fact that host.docker.internal is not available on Linux by default.
         var hostName = DefaultContainerHostName;
+
+        // Try to get the target port from resource. Here, the resource could be a AzureBlobStorageResource,
+        // which is a sub-resource of an actual container resource.
+        int? targetPort = null;
+        if (resource.TryGetLastAnnotation<EndpointAnnotation>(out var endpoint))
+        {
+            targetPort = endpoint.TargetPort;
+        }
+
+        // Find the actual container resource, in case this is a nested resource.
+        // e.g. for an AzureBlobStorageResource, the container resource is an AzureStorageResource
+        IResource containerResource = resource;
+        while (containerResource is IResourceWithParent resWithParent)
+        {
+            containerResource = resWithParent.Parent;
+        }
+
+        // Get the hostname for that container resource
+        var appResource = _appResources.SingleOrDefault(r => r.DcpResource is Container && r.ModelResource == containerResource);
+        if (appResource is not null)
+        {
+            hostName = ((Container)appResource.DcpResource).Spec.ContainerName;
+        }
+
+        // If we have a target port, replace the port in the connection string URL
+        // For a blob, the connection string URL is in the format:
+        // DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=key;BlobEndpoint=http://127.0.0.1:53177/devstoreaccount1;
+        // TODO: make this more robust
+        if (targetPort is not null)
+        {
+            var colonIndex = value.LastIndexOf(':');
+            var lastSlashIndex = value.LastIndexOf('/');
+            value = value.Substring(0, colonIndex + 1) + targetPort + value.Substring(lastSlashIndex);
+        }
 
         return value.Replace("localhost", hostName, StringComparison.OrdinalIgnoreCase)
                     .Replace("127.0.0.1", hostName)
