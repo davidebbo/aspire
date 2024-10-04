@@ -92,6 +92,12 @@ builder.AddProject<Projects.DavidTest_Web>("webfrontend")
     .WithReference(cache)
     .WithReference(apiService);
 
+builder.AddContainer("frontendcontainer", "davidtestweb")
+    .WithExternalHttpEndpoints()
+    .WithHttpEndpoint(targetPort: 8080)
+    .WithReference(cache)
+    .WithReference(apiService);
+
 // This project is only added in playground projects to support development/debugging
 // of the dashboard. It is not required in end developer code. Comment out this code
 // to test end developer dashboard launch experience. Refer to Directory.Build.props
