@@ -95,6 +95,7 @@ builder.AddProject<Projects.DavidTest_Web>("webfrontend")
 builder.AddContainer("frontendcontainer", "davidtestweb")
     .WithExternalHttpEndpoints()
     .WithHttpEndpoint(targetPort: 8080)
+    .WithOtlpExporter() // This line injects the HostUrl
     .WithReference(cache)
     .WithReference(apiService);
 
