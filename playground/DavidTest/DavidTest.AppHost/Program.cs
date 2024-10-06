@@ -98,6 +98,16 @@ builder.AddContainer("frontendcontainer", "davidtestweb")
     .WithReference(cache)
     .WithReference(apiService);
 
+/* For frp testing
+builder.AddContainer("frp", "frp")
+    .WithExternalHttpEndpoints()
+    .WithHttpEndpoint(port: 7000, targetPort: 7000, isProxied: false);
+
+builder.AddContainer("nodehello", "node-example")
+    .WithExternalHttpEndpoints()
+    .WithHttpEndpoint(port: 9000, targetPort: 9000, isProxied: false);
+*/
+
 // This project is only added in playground projects to support development/debugging
 // of the dashboard. It is not required in end developer code. Comment out this code
 // to test end developer dashboard launch experience. Refer to Directory.Build.props
