@@ -1588,6 +1588,7 @@ internal sealed class ApplicationExecutor(ILogger<ApplicationExecutor> logger,
                 var portSpec = new ContainerPortSpec()
                 {
                     ContainerPort = ea.TargetPort,
+                    HostIP = "0.0.0.0"  // Hack for frp testing. Needed since we access it from wsl2, not localhost
                 };
 
                 if (!ea.IsProxied && ea.Port is int)
