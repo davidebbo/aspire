@@ -12,6 +12,7 @@ using Aspire.Hosting.Eventing;
 using Aspire.Hosting.Health;
 using Aspire.Hosting.Lifecycle;
 using Aspire.Hosting.Publishing;
+using Aspire.Hosting.ReverseProxyTunnel;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -367,6 +368,11 @@ public class DistributedApplicationBuilder : IDistributedApplicationBuilder
     /// <inheritdoc />
     public DistributedApplication Build()
     {
+        if (_options.UseReverseProxyTunnel)
+        {
+            this.SetUpReverseProxyTunnel(_innerBuilder);
+        }
+
         AspireEventSource.Instance.DistributedApplicationBuildStart();
         try
         {
@@ -394,8 +400,8 @@ public class DistributedApplicationBuilder : IDistributedApplicationBuilder
         }
     }
 
-    /// <inheritdoc />
-    public IResourceBuilder<T> AddResource<T>(T resource) where T : IResource
+/// <inheritdoc />
+public IResourceBuilder<T> AddResource<T>(T resource) where T : IResource
     {
         ArgumentNullException.ThrowIfNull(resource);
 
