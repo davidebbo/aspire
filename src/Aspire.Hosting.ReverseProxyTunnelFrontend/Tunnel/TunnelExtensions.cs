@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Yarp.ReverseProxy.Forwarder;
 
-internal static class TunnelExensions
+internal static class TunnelExtensions
 {
     public static IServiceCollection AddTunnelServices(this IServiceCollection services)
     {
