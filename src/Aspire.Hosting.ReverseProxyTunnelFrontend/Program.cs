@@ -6,9 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var tmp = builder.Configuration.GetSection("ReverseProxy");
-Console.WriteLine("cfg:" + tmp.GetChildren().Count());
-
 builder.Services.AddReverseProxy()
        .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
