@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Aspire.Hosting.ReverseProxyTunnel;
-internal static class ReverseProxyBuilderExtensions
+internal static class ReverseProxyTunnelBuilderExtensions
 {
     internal static void SetUpReverseProxyTunnel(this IDistributedApplicationBuilder distributedAppBuilder, IHostApplicationBuilder hostAppBuilder)
     {
