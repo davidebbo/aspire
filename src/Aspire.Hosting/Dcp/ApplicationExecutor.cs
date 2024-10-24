@@ -17,7 +17,6 @@ using Aspire.Hosting.Dashboard;
 using Aspire.Hosting.Dcp.Model;
 using Aspire.Hosting.Eventing;
 using Aspire.Hosting.Lifecycle;
-using Aspire.Hosting.ReverseProxyTunnel;
 using Aspire.Hosting.Utils;
 using Json.Patch;
 using k8s;
@@ -82,7 +81,7 @@ internal sealed class ApplicationExecutor(ILogger<ApplicationExecutor> logger,
                                           IDistributedApplicationEventing eventing,
                                           IServiceProvider serviceProvider,
                                           DcpNameGenerator nameGenerator,
-                                          TunnelProxyConfig? tunnelConfig = null
+                                          TunnelingProxyManager? tunnelManager = null
                                           )
 {
     private const string DebugSessionPortVar = "DEBUG_SESSION_PORT";
@@ -1395,7 +1394,7 @@ internal sealed class ApplicationExecutor(ILogger<ApplicationExecutor> logger,
 
     private async Task<string?> GetValue(string? key, IValueProvider valueProvider, ILogger logger, bool isContainer, CancellationToken cancellationToken)
     {
-        var task = ExpressionResolver.ResolveAsync(isContainer, valueProvider, DefaultContainerHostName, tunnelConfig, cancellationToken);
+        var task = ExpressionResolver.ResolveAsync(isContainer, valueProvider, DefaultContainerHostName, tunnelManager, cancellationToken);
 
         if (!task.IsCompleted)
         {

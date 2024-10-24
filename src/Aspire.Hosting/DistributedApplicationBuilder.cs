@@ -391,9 +391,9 @@ public class DistributedApplicationBuilder : IDistributedApplicationBuilder
     /// <inheritdoc />
     public DistributedApplication Build()
     {
-        if (_options.UseReverseProxyTunnel)
+        if (_options.TunnelingProxyConfiguration is not null)
         {
-            this.SetUpReverseProxyTunnel(_innerBuilder);
+            this.SetUpReverseProxyTunnel(_innerBuilder, _options.TunnelingProxyConfiguration);
         }
 
         AspireEventSource.Instance.DistributedApplicationBuildStart();

@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Globalization;
-using Aspire.Hosting.ReverseProxyTunnel;
 
 namespace Aspire.Hosting.ApplicationModel;
 
-internal class ExpressionResolver(string containerHostName, TunnelProxyConfig? tunnelConfig, CancellationToken cancellationToken)
+internal class ExpressionResolver(string containerHostName, TunnelingProxyManager? tunnelManager, CancellationToken cancellationToken)
 {
     class HostAndPortPresence
     {
@@ -61,7 +60,7 @@ internal class ExpressionResolver(string containerHostName, TunnelProxyConfig? t
             _endpointUsage[endpointUniqueName].HasHost &&
             _endpointUsage[endpointUniqueName].HasPort;
 
-        return (property, target.IsContainer(), HasBothHostAndPort(), tunnelConfig is not null) switch
+        return (property, target.IsContainer(), HasBothHostAndPort(), tunnelManager is not null) switch
         {
             // If Container -> Container, we go directly to the container name and target port, bypassing the host
             // But only do this if we have processed both the host and port properties for that same endpoint.
@@ -70,8 +69,8 @@ internal class ExpressionResolver(string containerHostName, TunnelProxyConfig? t
             (EndpointProperty.Port, true, true, _) => await endpointReference.Property(EndpointProperty.TargetPort).GetValueAsync(cancellationToken).ConfigureAwait(false),
             // If Container -> Exe, we need to go through the container host
             (EndpointProperty.Host or EndpointProperty.IPV4Host, false, _, false) => containerHostName,
-            (EndpointProperty.Host or EndpointProperty.IPV4Host, false, true, true) => tunnelConfig!.FrontendContainerName,
-            (EndpointProperty.Port, false, true, true) => tunnelConfig!.MapPort(endpointReference.Port).ToString(CultureInfo.InvariantCulture),
+            (EndpointProperty.Host or EndpointProperty.IPV4Host, false, true, true) => TunnelingProxyManager.FrontendContainerName,
+            (EndpointProperty.Port, false, true, true) => tunnelManager!.MapPort(endpointReference.Port).ToString(CultureInfo.InvariantCulture),
             (EndpointProperty.Url, _, _, _) => string.Format(CultureInfo.InvariantCulture, "{0}://{1}:{2}",
                                             endpointReference.Scheme,
                                             await EvalEndpointAsync(endpointReference, EndpointProperty.Host).ConfigureAwait(false),
@@ -152,7 +151,7 @@ internal class ExpressionResolver(string containerHostName, TunnelProxyConfig? t
         };
     }
 
-    static async ValueTask<string?> ResolveWithContainerSourceAsync(IValueProvider valueProvider, string containerHostName, TunnelProxyConfig? tunnelConfig, CancellationToken cancellationToken)
+    static async ValueTask<string?> ResolveWithContainerSourceAsync(IValueProvider valueProvider, string containerHostName, TunnelingProxyManager? tunnelConfig, CancellationToken cancellationToken)
     {
         var resolver = new ExpressionResolver(containerHostName, tunnelConfig, cancellationToken);
 
@@ -164,7 +163,7 @@ internal class ExpressionResolver(string containerHostName, TunnelProxyConfig? t
         return await resolver.ResolveInternalAsync(valueProvider).ConfigureAwait(false);
     }
 
-    internal static async ValueTask<string?> ResolveAsync(bool sourceIsContainer, IValueProvider valueProvider, string containerHostName, TunnelProxyConfig? tunnelConfig, CancellationToken cancellationToken)
+    internal static async ValueTask<string?> ResolveAsync(bool sourceIsContainer, IValueProvider valueProvider, string containerHostName, TunnelingProxyManager? tunnelConfig, CancellationToken cancellationToken)
     {
         return sourceIsContainer switch
         {

@@ -162,6 +162,8 @@ Aspire.Hosting.ApplicationModel.WaitType.WaitForCompletion = 1 -> Aspire.Hosting
 Aspire.Hosting.ApplicationModel.WaitType.WaitUntilHealthy = 0 -> Aspire.Hosting.ApplicationModel.WaitType
 Aspire.Hosting.DistributedApplicationBuilder.AppHostPath.get -> string!
 Aspire.Hosting.DistributedApplicationBuilder.Eventing.get -> Aspire.Hosting.Eventing.IDistributedApplicationEventing!
+Aspire.Hosting.DistributedApplicationOptions.TunnelingProxyConfiguration.get -> Aspire.Hosting.ReverseProxyTunnel.TunnelingProxyConfiguration?
+Aspire.Hosting.DistributedApplicationOptions.TunnelingProxyConfiguration.set -> void
 Aspire.Hosting.Eventing.DistributedApplicationEventing
 Aspire.Hosting.Eventing.DistributedApplicationEventing.DistributedApplicationEventing() -> void
 Aspire.Hosting.Eventing.DistributedApplicationEventing.PublishAsync<T>(T event, Aspire.Hosting.Eventing.EventDispatchBehavior dispatchBehavior, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
@@ -211,6 +213,10 @@ Aspire.Hosting.LaunchSettings
 Aspire.Hosting.LaunchSettings.LaunchSettings() -> void
 Aspire.Hosting.LaunchSettings.Profiles.get -> System.Collections.Generic.Dictionary<string!, Aspire.Hosting.LaunchProfile!>!
 Aspire.Hosting.LaunchSettings.Profiles.set -> void
+Aspire.Hosting.ReverseProxyTunnel.TunnelingProxyConfiguration
+Aspire.Hosting.ReverseProxyTunnel.TunnelingProxyConfiguration.PfxPassword.get -> string!
+Aspire.Hosting.ReverseProxyTunnel.TunnelingProxyConfiguration.PfxPath.get -> string!
+Aspire.Hosting.ReverseProxyTunnel.TunnelingProxyConfiguration.TunnelingProxyConfiguration(string! pfxFilePath, string! pfxPassword) -> void
 static Aspire.Hosting.ApplicationModel.CommandResults.Success() -> Aspire.Hosting.ApplicationModel.ExecuteCommandResult!
 static Aspire.Hosting.ApplicationModel.ResourceExtensions.GetEnvironmentVariableValuesAsync(this Aspire.Hosting.ApplicationModel.IResourceWithEnvironment! resource, Aspire.Hosting.DistributedApplicationOperation applicationOperation = Aspire.Hosting.DistributedApplicationOperation.Run) -> System.Threading.Tasks.ValueTask<System.Collections.Generic.Dictionary<string!, string!>!>
 Aspire.Hosting.ApplicationModel.ResourceNotificationService.WaitForResourceAsync(string! resourceName, string? targetState = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!

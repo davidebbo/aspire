@@ -11,18 +11,18 @@ using Yarp.ReverseProxy.Configuration;
 
 namespace Aspire.Hosting.ReverseProxyTunnel;
 
-internal sealed class ReverseProxyTunnelBackendServiceHost : IHostedService
+internal sealed class TunnelingProxyBackendServiceHost : IHostedService
 {
     private readonly WebApplication? _app;
-    private readonly ILogger<ReverseProxyTunnelBackendServiceHost> _logger;
-    private readonly TunnelProxyConfig _tunnelConfig;
+    private readonly ILogger<TunnelingProxyBackendServiceHost> _logger;
+    private readonly TunnelingProxyManager _tunnelManager;
 
-    public ReverseProxyTunnelBackendServiceHost(
+    public TunnelingProxyBackendServiceHost(
         ILoggerFactory loggerFactory,
-        TunnelProxyConfig tunnelConfig)
+        TunnelingProxyManager tunnelManager)
     {
-        _logger = loggerFactory.CreateLogger<ReverseProxyTunnelBackendServiceHost>();
-        _tunnelConfig = tunnelConfig;
+        _logger = loggerFactory.CreateLogger<TunnelingProxyBackendServiceHost>();
+        _tunnelManager = tunnelManager;
 
         var builder = WebApplication.CreateSlimBuilder();
 
@@ -30,7 +30,7 @@ internal sealed class ReverseProxyTunnelBackendServiceHost : IHostedService
                .LoadFromMemory(GetRouteConfigList(), GetClusterConfigList());
 
         // This is the HTTP/2 endpoint to register this app as part of the cluster endpoint
-        var url = $"https://localhost:{_tunnelConfig.FrontendControlPort}/connect-h2?host=backend1.app";
+        var url = $"https://localhost:{_tunnelManager.FrontendControlPort}/connect-h2?host=backend1.app";
         builder.WebHost.UseTunnelTransport(url);
 
         // Hack to avoid some odd port conflict. Without it, we get:
@@ -61,7 +61,7 @@ internal sealed class ReverseProxyTunnelBackendServiceHost : IHostedService
 
     IReadOnlyList<RouteConfig> GetRouteConfigList()
     {
-        return _tunnelConfig.TunneledEndpoints.Select(kvp => GetRouteConfig(kvp.Value, kvp.Value)).ToList();
+        return _tunnelManager.TunneledEndpoints.Select(kvp => GetRouteConfig(kvp.Value, kvp.Value)).ToList();
     }
 
     static RouteConfig GetRouteConfig(int num, int port)
@@ -87,7 +87,7 @@ internal sealed class ReverseProxyTunnelBackendServiceHost : IHostedService
 
     private IReadOnlyList<ClusterConfig> GetClusterConfigList()
     {
-        return _tunnelConfig.TunneledEndpoints.Select(kvp => GetClusterConfig(kvp.Value, kvp.Key)).ToList();
+        return _tunnelManager.TunneledEndpoints.Select(kvp => GetClusterConfig(kvp.Value, kvp.Key)).ToList();
 
         //return [
         //    GetClusterConfig(1, new EndpointAnnotation(System.Net.Sockets.ProtocolType.Tcp, "https", port: 7053)),
