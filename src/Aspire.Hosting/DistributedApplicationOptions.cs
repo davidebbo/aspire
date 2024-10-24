@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Reflection;
+using Aspire.Hosting.ReverseProxyTunnel;
 
 namespace Aspire.Hosting;
 
@@ -72,6 +73,11 @@ public sealed class DistributedApplicationOptions
     /// Allows the use of HTTP urls for for the AppHost resource endpoint.
     /// </summary>
     public bool AllowUnsecuredTransport { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public TunnelingProxyConfiguration? TunnelingProxyConfiguration { get; set; }
 
     private string? ResolveProjectDirectory()
     {
