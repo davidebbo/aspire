@@ -88,11 +88,6 @@ internal sealed class TunnelingProxyBackendServiceHost : IHostedService
     private IReadOnlyList<ClusterConfig> GetClusterConfigList()
     {
         return _tunnelManager.TunneledEndpoints.Select(kvp => GetClusterConfig(kvp.Value, kvp.Key)).ToList();
-
-        //return [
-        //    GetClusterConfig(1, new EndpointAnnotation(System.Net.Sockets.ProtocolType.Tcp, "https", port: 7053)),
-        //    GetClusterConfig(2, new EndpointAnnotation(System.Net.Sockets.ProtocolType.Tcp, "https", port: 7054)),
-        //];
     }
 
     static ClusterConfig GetClusterConfig(int num, EndpointAnnotation endpoint)
