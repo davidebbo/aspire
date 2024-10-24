@@ -627,7 +627,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.Hosting.Sdk.Tests", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.Hosting.Azure.AppContainers", "src\Aspire.Hosting.Azure.AppContainers\Aspire.Hosting.Azure.AppContainers.csproj", "{21FBDB19-0B8B-4F0F-8ED6-98560AD5DDA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.Hosting.ReverseProxyTunnelFrontend", "src\Aspire.Hosting.ReverseProxyTunnelFrontend\Aspire.Hosting.ReverseProxyTunnelFrontend.csproj", "{D33798F9-663D-47F9-BE21-1F5CAF0F9C51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aspire.Hosting.TunnelingProxyFrontend", "src\Aspire.Hosting.TunnelingProxyFrontend\Aspire.Hosting.TunnelingProxyFrontend.csproj", "{D33798F9-663D-47F9-BE21-1F5CAF0F9C51}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AzureContainerApps", "AzureContainerApps", "{D47C77F3-49F4-4741-9786-6F68FC50587E}"
 EndProject

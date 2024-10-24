@@ -8,8 +8,8 @@ using Aspire.Hosting.ReverseProxyTunnel;
 
 class TunnelingProxyManager
 {
-    const string FrontendContainerImage = "aspirereverseproxytunnelfrontend";
-    public const string FrontendContainerName = "reverseproxytunnelfrontend";
+    const string FrontendContainerImage = "aspiretunnelingproxyfrontend";
+    public const string FrontendContainerName = "tunnelingproxyfrontend";
 
     public TunnelingProxyManager(IDistributedApplicationBuilder distributedAppBuilder, TunnelingProxyConfiguration config)
     {
