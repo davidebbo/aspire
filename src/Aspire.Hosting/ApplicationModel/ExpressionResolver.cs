@@ -67,12 +67,15 @@ internal class ExpressionResolver(string containerHostName, TunnelingProxyManage
             // This allows the host and port to be handled in a unified way.
             (EndpointProperty.Host or EndpointProperty.IPV4Host, true, true, _) => target.Name,
             (EndpointProperty.Port, true, true, _) => await endpointReference.Property(EndpointProperty.TargetPort).GetValueAsync(cancellationToken).ConfigureAwait(false),
-            // If Container -> Exe, we need to go through the container host
+            // If Container -> Exe, we need to go through the container host if there is no tunnel
             (EndpointProperty.Host or EndpointProperty.IPV4Host, false, _, false) => containerHostName,
+            // But if Container -> Exe with a tunnel, we redirect to the tunnel frontend, always using http
+            (EndpointProperty.Scheme, false, true, true) => "http",
             (EndpointProperty.Host or EndpointProperty.IPV4Host, false, true, true) => TunnelingProxyManager.FrontendContainerName,
             (EndpointProperty.Port, false, true, true) => tunnelManager!.MapPort(endpointReference.Port).ToString(CultureInfo.InvariantCulture),
+            // For the URL, we just recurse into each of the components
             (EndpointProperty.Url, _, _, _) => string.Format(CultureInfo.InvariantCulture, "{0}://{1}:{2}",
-                                            endpointReference.Scheme,
+                                            await EvalEndpointAsync(endpointReference, EndpointProperty.Scheme).ConfigureAwait(false),
                                             await EvalEndpointAsync(endpointReference, EndpointProperty.Host).ConfigureAwait(false),
                                             await EvalEndpointAsync(endpointReference, EndpointProperty.Port).ConfigureAwait(false)),
             _ => await endpointReference.Property(property).GetValueAsync(cancellationToken).ConfigureAwait(false)
