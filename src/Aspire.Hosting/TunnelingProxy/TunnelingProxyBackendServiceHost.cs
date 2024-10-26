@@ -78,7 +78,10 @@ internal sealed class TunnelingProxyBackendServiceHost : IHostedService
                     new RouteHeader
                     {
                         Name = "X-Forwarded-Host",
-                        Values = [$"localhost:{port}", $"reverseproxytunnelfrontend:{port}"]
+                        // We match two host names:
+                        // - localhost is just for testing so you can hit the tunnelling frontent directly
+                        // - the frontend container name is what's used when other containers are talking to the frontend
+                        Values = [$"localhost:{port}", $"{TunnelingProxyManager.FrontendContainerName}:{port}"]
                     }
                 ]
             }
