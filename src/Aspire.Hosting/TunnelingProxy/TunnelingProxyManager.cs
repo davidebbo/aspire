@@ -35,6 +35,12 @@ class TunnelingProxyManager
             }
         }
 
+        if (TunneledEndpoints.Count == 0)
+        {
+            // No tunneled endpoints, no need to create the tunnel frontend container
+            return;
+        }
+
         var pfxFileName = Path.GetFileName(config.PfxPath);
         var pfxFolder = Path.GetDirectoryName(config.PfxPath);
         var pfxContainerFolder = "/https/";
