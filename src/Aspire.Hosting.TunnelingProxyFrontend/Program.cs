@@ -2,24 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using UFX.Relay.Tunnel.Forwarder;
+using UFX.Relay.Tunnel;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddReverseProxy()
-       .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
-
-builder.Services.AddTunnelServices();
-
+builder.Services.AddTunnelForwarder(options =>
+{
+    options.DefaultTunnelId = "aspire";
+});
 var app = builder.Build();
-
-app.MapReverseProxy();
-
-// Uncomment to support websocket connections
-//app.MapWebSocketTunnel("/connect-ws");
-
-// Auth can be added to this endpoint and we can restrict it to certain points
-// to avoid exteranl traffic hitting it
-app.MapHttp2Tunnel("/connect-h2");
+app.MapTunnelHost();
+app.MapTunnelForwarder();
 
 app.Run();

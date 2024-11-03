@@ -3,10 +3,11 @@
 
 using Aspire.Hosting.ApplicationModel;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using UFX.Relay.Tunnel.Listener;
+using UFX.Relay.Tunnel;
 using Yarp.ReverseProxy.Configuration;
 
 namespace Aspire.Hosting.ReverseProxyTunnel;
@@ -29,14 +30,12 @@ internal sealed class TunnelingProxyBackendServiceHost : IHostedService
         builder.Services.AddReverseProxy()
                .LoadFromMemory(GetRouteConfigList(), GetClusterConfigList());
 
-        // This is the HTTP/2 endpoint to register this app as part of the cluster endpoint
-        var url = $"https://localhost:{_tunnelManager.FrontendControlPort}/connect-h2?host=backend1.app";
-        builder.WebHost.UseTunnelTransport(url);
-
-        // Hack to avoid some odd port conflict. Without it, we get:
-        // "Failed to bind to address https://127.0.0.1:15887: address already in use"
-        // Where 15887 is the apphost launchSettings port
-        builder.WebHost.UseUrls("http://localhost");
+        builder.WebHost.AddTunnelListener(includeDefaultUrls: false);
+        builder.Services.AddTunnelClient(options =>
+        {
+            options.TunnelHost = $"wss://localhost:{_tunnelManager.FrontendControlPort}";
+            options.TunnelId = "aspire";
+        });
 
         _app = builder.Build();
 

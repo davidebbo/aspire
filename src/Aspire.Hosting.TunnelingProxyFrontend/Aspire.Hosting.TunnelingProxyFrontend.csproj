@@ -25,4 +25,10 @@
     <AdditionalFiles Remove="C:\repos\aspire\src\Aspire.Hosting.ReverseProxyTunnelFrontend\PublicAPI.Unshipped.txt" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="UFX.Relay">
+      <HintPath>..\..\UFX.Relay\UFX.Relay.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

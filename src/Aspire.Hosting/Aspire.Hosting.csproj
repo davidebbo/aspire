@@ -77,4 +77,11 @@
     <InternalsVisibleTo Include="Aspire.Hosting.Containers.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="UFX.Relay">
+      <HintPath>..\..\UFX.Relay\UFX.Relay.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+
 </Project>
