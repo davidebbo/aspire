@@ -49,6 +49,7 @@
     <PackageReference Include="Polly.Core" />
     <PackageReference Include="JsonPatch.Net" />
     <PackageReference Include="AspNetCore.HealthChecks.Uris" />
+    <PackageReference Include="UFX.Relay" />
     <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
 
@@ -75,13 +76,6 @@
     <InternalsVisibleTo Include="Aspire.Hosting.Tests" />
     <InternalsVisibleTo Include="Aspire.Hosting.Testing.Tests" />
     <InternalsVisibleTo Include="Aspire.Hosting.Containers.Tests" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="UFX.Relay">
-      <HintPath>..\..\UFX.Relay\UFX.Relay.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
 
 </Project>

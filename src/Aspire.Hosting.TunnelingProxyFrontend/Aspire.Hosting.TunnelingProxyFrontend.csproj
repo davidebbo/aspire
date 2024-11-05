@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Connections.Client" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="UFX.Relay" />
 	  <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
 
@@ -23,12 +24,6 @@
 
   <ItemGroup>
     <AdditionalFiles Remove="C:\repos\aspire\src\Aspire.Hosting.ReverseProxyTunnelFrontend\PublicAPI.Unshipped.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="UFX.Relay">
-      <HintPath>..\..\UFX.Relay\UFX.Relay.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
