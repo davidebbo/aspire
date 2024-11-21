@@ -51,7 +51,7 @@ public class ExpressionResolverTests
 
         // First test ExpressionResolver directly
         var csRef = new ConnectionStringReference(target.Resource, false);
-        var connectionString = await ExpressionResolver.ResolveAsync(sourceIsContainer, csRef, "ContainerHostName", CancellationToken.None).DefaultTimeout();
+        var connectionString = await ExpressionResolver.ResolveAsync(sourceIsContainer, csRef, "ContainerHostName", null, CancellationToken.None).DefaultTimeout();
         Assert.Equal(expectedConnectionString, connectionString);
 
         // Then test it indirectly with a resource reference, which exercises a more complete code path

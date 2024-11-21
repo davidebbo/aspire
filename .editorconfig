@@ -83,6 +83,13 @@ dotnet_naming_symbols.private_internal_fields.applicable_accessibilities = priva
 dotnet_naming_style.camel_case_underscore_style.required_prefix = _
 dotnet_naming_style.camel_case_underscore_style.capitalization = camel_case
 
+# To get around https://github.com/unifiedfx/UFX.Relay/issues/6
+dotnet_diagnostic.VSTHRD003.severity = none
+dotnet_diagnostic.VSTHRD002.severity = none
+dotnet_diagnostic.VSTHRD103.severity = none
+dotnet_diagnostic.VSTHRD110.severity = none
+dotnet_diagnostic.VSTHRD011.severity = none
+
 [*.{xml,config,*proj,nuspec,props,resx,targets,yml,tasks}]
 indent_size = 2
 
@@ -349,6 +356,13 @@ dotnet_diagnostic.IDE0200.severity = warning
 # IDE2000: Disallow multiple blank lines
 dotnet_style_allow_multiple_blank_lines_experimental = false
 dotnet_diagnostic.IDE2000.severity = warning
+
+dotnet_diagnostic.VSTHRD003.severity = none
+dotnet_diagnostic.VSTHRD002.severity = none
+dotnet_diagnostic.VSTHRD011.severity = none
+dotnet_diagnostic.VSTHRD103.severity = none
+dotnet_diagnostic.VSTHRD110.severity = none
+dotnet_diagnostic.VSTHRD200.severity = none
 
 [{eng/tools/**.cs,**/{test,testassets,samples,Samples,perf,benchmarkapps,scripts,stress}/**.cs,src/Hosting/Server.IntegrationTesting/**.cs,src/Servers/IIS/IntegrationTesting.IIS/**.cs,src/Shared/Http2cat/**.cs,src/Testing/**.cs}]
 # CA1018: Mark attributes with AttributeUsageAttribute

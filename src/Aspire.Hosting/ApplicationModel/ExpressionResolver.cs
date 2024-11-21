@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Aspire.Hosting.ApplicationModel;
 
-internal class ExpressionResolver(string containerHostName, CancellationToken cancellationToken)
+internal class ExpressionResolver(string containerHostName, TunnelingProxyManager? tunnelManager, CancellationToken cancellationToken)
 {
     class HostAndPortPresence
     {
@@ -60,17 +60,22 @@ internal class ExpressionResolver(string containerHostName, CancellationToken ca
             _endpointUsage[endpointUniqueName].HasHost &&
             _endpointUsage[endpointUniqueName].HasPort;
 
-        return (property, target.IsContainer(), HasBothHostAndPort()) switch
+        return (property, target.IsContainer(), HasBothHostAndPort(), tunnelManager is not null) switch
         {
             // If Container -> Container, we go directly to the container name and target port, bypassing the host
             // But only do this if we have processed both the host and port properties for that same endpoint.
             // This allows the host and port to be handled in a unified way.
-            (EndpointProperty.Host or EndpointProperty.IPV4Host, true, true) => target.Name,
-            (EndpointProperty.Port, true, true) => await endpointReference.Property(EndpointProperty.TargetPort).GetValueAsync(cancellationToken).ConfigureAwait(false),
-            // If Container -> Exe, we need to go through the container host
-            (EndpointProperty.Host or EndpointProperty.IPV4Host, false, _) => containerHostName,
-            (EndpointProperty.Url, _, _) => string.Format(CultureInfo.InvariantCulture, "{0}://{1}:{2}",
-                                            endpointReference.Scheme,
+            (EndpointProperty.Host or EndpointProperty.IPV4Host, true, true, _) => target.Name,
+            (EndpointProperty.Port, true, true, _) => await endpointReference.Property(EndpointProperty.TargetPort).GetValueAsync(cancellationToken).ConfigureAwait(false),
+            // If Container -> Exe, we need to go through the container host if there is no tunnel
+            (EndpointProperty.Host or EndpointProperty.IPV4Host, false, _, false) => containerHostName,
+            // But if Container -> Exe with a tunnel, we redirect to the tunnel frontend, always using http
+            (EndpointProperty.Scheme, false, true, true) => "http",
+            (EndpointProperty.Host or EndpointProperty.IPV4Host, false, true, true) => TunnelingProxyManager.FrontendContainerName,
+            (EndpointProperty.Port, false, true, true) => tunnelManager!.MapPort(endpointReference.Port).ToString(CultureInfo.InvariantCulture),
+            // For the URL, we just recurse into each of the components
+            (EndpointProperty.Url, _, _, _) => string.Format(CultureInfo.InvariantCulture, "{0}://{1}:{2}",
+                                            await EvalEndpointAsync(endpointReference, EndpointProperty.Scheme).ConfigureAwait(false),
                                             await EvalEndpointAsync(endpointReference, EndpointProperty.Host).ConfigureAwait(false),
                                             await EvalEndpointAsync(endpointReference, EndpointProperty.Port).ConfigureAwait(false)),
             _ => await endpointReference.Property(property).GetValueAsync(cancellationToken).ConfigureAwait(false)
@@ -149,9 +154,9 @@ internal class ExpressionResolver(string containerHostName, CancellationToken ca
         };
     }
 
-    static async ValueTask<string?> ResolveWithContainerSourceAsync(IValueProvider valueProvider, string containerHostName, CancellationToken cancellationToken)
+    static async ValueTask<string?> ResolveWithContainerSourceAsync(IValueProvider valueProvider, string containerHostName, TunnelingProxyManager? tunnelConfig, CancellationToken cancellationToken)
     {
-        var resolver = new ExpressionResolver(containerHostName, cancellationToken);
+        var resolver = new ExpressionResolver(containerHostName, tunnelConfig, cancellationToken);
 
         // Run the processing phase to know if the host and port properties are both used for each endpoint.
         resolver.Preprocess = true;
@@ -161,14 +166,14 @@ internal class ExpressionResolver(string containerHostName, CancellationToken ca
         return await resolver.ResolveInternalAsync(valueProvider).ConfigureAwait(false);
     }
 
-    internal static async ValueTask<string?> ResolveAsync(bool sourceIsContainer, IValueProvider valueProvider, string containerHostName, CancellationToken cancellationToken)
+    internal static async ValueTask<string?> ResolveAsync(bool sourceIsContainer, IValueProvider valueProvider, string containerHostName, TunnelingProxyManager? tunnelConfig, CancellationToken cancellationToken)
     {
         return sourceIsContainer switch
         {
             // Exe -> Exe and Exe -> Container cases
             false => await valueProvider.GetValueAsync(cancellationToken).ConfigureAwait(false),
             // Container -> Exe and Container -> Container cases
-            true => await ResolveWithContainerSourceAsync(valueProvider, containerHostName, cancellationToken).ConfigureAwait(false)
+            true => await ResolveWithContainerSourceAsync(valueProvider, containerHostName, tunnelConfig, cancellationToken).ConfigureAwait(false)
         };
     }
 }
