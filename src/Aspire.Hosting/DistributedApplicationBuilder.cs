@@ -423,8 +423,8 @@ public class DistributedApplicationBuilder : IDistributedApplicationBuilder
         }
     }
 
-/// <inheritdoc />
-public IResourceBuilder<T> AddResource<T>(T resource) where T : IResource
+    /// <inheritdoc />
+    public IResourceBuilder<T> AddResource<T>(T resource) where T : IResource
     {
         ArgumentNullException.ThrowIfNull(resource);
 
